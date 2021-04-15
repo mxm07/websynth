@@ -1,0 +1,73 @@
+.keyboard {
+  height: 100px;
+  width: 100%;
+  margin-top: -7px;
+  overflow: hidden;
+  white-space: nowrap;
+
+  z-index: -9999;
+
+  &__octave {
+    height: 100%;
+    width: 154px;
+    
+    display: inline-block;
+    position: relative;
+  }
+
+  &__key-group {
+    &--white, &--black {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    &--white {
+      height: 100%;
+    }
+
+    &--black {
+      height: 60%;
+
+      pointer-events: none;
+    }
+  }
+  
+  &__key {
+    &--white, &--black {
+      display: inline-block;
+      margin-right: 2px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    &--white {
+      background-color: #ddd;
+      width: 20px;
+      height: 100%;
+
+      &:hover { background-color: #bbb; }
+    }
+
+    &--black {
+      background-color: #222;
+      width: 15px;
+      height: 100%;
+      vertical-align: top;
+      margin-left: 5px;
+      pointer-events: auto;
+
+      &:first-child {
+        margin-left: 14px;
+      }
+
+      &:nth-child(3) {
+        margin-left: 27px;
+      }
+
+      &:hover { background-color: #444; }
+    }
+  }
+}

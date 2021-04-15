@@ -1,0 +1,18 @@
+.button {
+  background: #555;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 20px;
+  font-family: NowBold;
+  color: #222;
+  outline: inherit;
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 1;
+  }
+}

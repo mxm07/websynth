@@ -1,0 +1,49 @@
+.knob-wrapper {
+  display: inline-block;
+  text-align: center;
+
+  &__label {
+    font-size: 0.75em;
+    font-family: NowBold;
+    color: #222;
+  }
+}
+
+.knob {
+  background-color: #555;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  margin: 0 auto;
+
+  width: 50px;
+  height: 50px;
+
+  &__marker, &__value {
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__value {
+    text-align: center;
+    font-family: NowBold;
+    font-size: 0.75em;
+    color: #333;
+
+    top: 35%;
+  }
+
+  &__marker {
+    width: 11%;
+    height: 100%;
+
+    background-color: #222;
+
+    padding-top: 1px;
+    clip-path: inset(85% 0 0 0);
+  }
+}
