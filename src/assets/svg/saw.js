@@ -5,9 +5,7 @@ const Saw = ({
   animateOnHover = true,
   width = 20, 
   height = 10,
-  stroke = 'white', 
-  strokeWidth = 20, 
-  ...rest 
+  ...rest
 }) => {
   const [animating, setAnimating] = useState(false)
   
@@ -21,7 +19,7 @@ const Saw = ({
       { ...rest }
     >
       <defs>
-        <path id="saw" fill="transparent" stroke={ stroke } strokeWidth={ strokeWidth }
+        <path id="saw" fill="transparent" stroke='white' strokeWidth={ 20 }
             d="M -100 90
             L 100 10 L 100 90
             L 300 10 L 300 90
@@ -30,7 +28,7 @@ const Saw = ({
 
       <use xlinkHref="#saw" x="0" y="0">
         { (animate || animating) && 
-          <animate attributeName="x" from="0" to="-200" dur="3s" repeatCount="indefinite" /> 
+          <animate attributeName="x" from="0" to="-200" dur="2s" repeatCount="indefinite" /> 
         }
       </use>
     </svg>

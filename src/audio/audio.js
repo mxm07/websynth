@@ -1,37 +1,51 @@
-class Audio {
-  constructor() {
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-    this.gainNode = this.audioCtx.createGain()
+import Oscillator from './Oscillator'
 
-    this.oscillators = []
-  }
+const MAX_VOICES = 8
 
-  startOscillator = (type = 'sine', freq) => {
-    console.log(freq)
-    console.log(isFinite(freq))
+const getByField = (arr, field, value) => {
+  let index = -1
 
-    if (isFinite(freq)) {
-      const oscillator = this.audioCtx.createOscillator()
-      oscillator.type = type
-      oscillator.frequency.setValueAtTime(freq, this.audioCtx.currentTime)
-      oscillator.connect(this.gainNode).connect(this.audioCtx.destination)
-      oscillator.start()
-
-      this.oscillators.push(oscillator)
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][field] && arr[i][field] === value) {
+      index = i
     }
   }
 
-  stopOscillator = (index = 0) => {
-    this.oscillators[index] && this.oscillators[index].stop()
-    this.oscillators.splice(index, 1)
+  return index
+}
+
+class Audio {
+  constructor() {
+    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    this.type = 'sine'
+
+    // initialize with one sine oscillator
+    this.oscillators = [new Oscillator(this.audioCtx)]
   }
 
-  setOscillatorFrequency = (freq, index = 0) => {
-    this.oscillators[index] && this.oscillators[index].frequency.setValueAtTime(freq, this.audioCtx.currentTime)
+  setOscType = (type, oscIndex = 0) => this.oscillators[oscIndex].setType(type)
+
+  setAdsr = ({ attack, decay, sustain, release }, oscIndex = 0) => {
+    const osc = this.oscillators[oscIndex]
+
+    this.oscillators[oscIndex].adsr = {
+        attack: attack || osc.adsr.attack,
+        decay: decay || osc.adsr.decay,
+        sustain: sustain || osc.adsr.sustain,
+        release: release || osc.adsr.release
+    }
   }
 
-  setGain = gain => {
-    this.gainNode.gain.value = gain
+  startOscillator = (note, oscIndex = 0) => {
+    this.oscillators[oscIndex].startVoice(note)
+  }
+
+  stopOscillator = (note, oscIndex = 0) => {
+    this.oscillators[oscIndex].stopVoice(note)
+  }
+
+  setLevel = (level, oscIndex = 0) => {
+    this.oscillators[oscIndex].level = level
   }
 }
 

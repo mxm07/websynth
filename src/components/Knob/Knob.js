@@ -13,6 +13,7 @@ const Knob = ({
   min = 0,
   max = 100,
   places = 1,
+  suffix = '',
   onChange = () => {}
 }) => {
   const [mouseDown, setMouseDown] = useState(false)
@@ -22,17 +23,17 @@ const Knob = ({
   const [knobValue, setKnobValue] = useState(0)
 
 
-  const onMouseDown = () => { 
+  const onMouseDown = () => {
     setMouseDown(true)
     setInitialDragPos(mousePos)
     setInitialValue(knobValue)
   }
-  
-  const onMouseUp = () => { 
-    setMouseDown(false) 
+
+  const onMouseUp = () => {
+    setMouseDown(false)
     setInitialDragPos({ x: -1, y: -1 })
   }
-  
+
   const onMouseMove = ({ clientX, clientY }) => { setMousePos({ x: clientX, y: clientY }) }
 
   const onWheel = ({ deltaY }) => {
@@ -53,7 +54,7 @@ const Knob = ({
 
     return () => body.removeEventListener('mouseup', onMouseUp)
   }, [])
- 
+
   useEffect(() => {
     body.addEventListener('mousemove', onMouseMove)
 
@@ -69,13 +70,12 @@ const Knob = ({
 
       // Scale to drag range, and normalize between 0 and 1
       const newValue = clamp(initialValue + delta / DRAG_RANGE)
-      
+
       setKnobValue(newValue)
-      onChange(calculateRealValue(newValue))
     }
   }, [
-    mousePos, 
-    mouseDown, 
+    mousePos,
+    mouseDown,
     initialDragPos.x,
     initialDragPos.y,
     initialValue,
@@ -83,24 +83,28 @@ const Knob = ({
     onChange
   ])
 
+  useEffect(() => {
+    onChange(calculateRealValue(knobValue))
+  }, [knobValue, calculateRealValue, onChange])
+
 
 
   const degreeRotation = 45 + 270 * knobValue
-  
+
   return (
     <div className="knob-wrapper">
-      <div 
+      <div
         className={ classNames('knob', className) }
         onMouseDown={ onMouseDown }
         onWheel={ onWheel }
       >
         <div className="knob__marker" style={{ transform: `translateX(-50%) rotate(${degreeRotation}deg)` }} />
         <div className="knob__value">
-          { calculateRealValue(knobValue) }
+          { `${calculateRealValue(knobValue)}${suffix}` }
         </div>
       </div>
       { label &&
-        <label className="knob-wrapper__label">{ label }</label> 
+        <label className="knob-wrapper__label">{ label }</label>
       }
     </div>
   )

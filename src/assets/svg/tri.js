@@ -5,8 +5,6 @@ const Tri = ({
   animateOnHover = true,
   width = 20, 
   height = 10,
-  stroke = 'white', 
-  strokeWidth='20', 
   ...rest 
 }) => {
   const [animating, setAnimating] = useState(false)
@@ -21,7 +19,7 @@ const Tri = ({
       { ...rest }
     >
       <defs>
-        <path id="tri" fill="transparent" stroke={ stroke } strokeWidth={ strokeWidth }
+        <path id="tri" fill="transparent" stroke='white' strokeWidth={ 20 }
               d="M0 60
                 L60 10 L 160 90
                 L 260 10 L 360 90
@@ -29,7 +27,7 @@ const Tri = ({
       </defs>
         <use xlinkHref="#tri" x="0" y="0">
           { (animate || animating) && 
-            <animate attributeName="x" from="0" to="-200" dur="3s" repeatCount="indefinite" /> 
+            <animate attributeName="x" from="0" to="-200" dur="2s" repeatCount="indefinite" /> 
           }
         </use>
 
