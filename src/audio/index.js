@@ -1,3 +1,3 @@
-import Audio from './Audio'
+import Audio from './audio'
 
 export default Audio

@@ -1,19 +1,5 @@
 import Oscillator from './Oscillator'
 
-const MAX_VOICES = 8
-
-const getByField = (arr, field, value) => {
-  let index = -1
-
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i][field] && arr[i][field] === value) {
-      index = i
-    }
-  }
-
-  return index
-}
-
 class Audio {
   constructor() {
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)()

@@ -10,6 +10,7 @@ class Oscillator {
     this.activeVoices.fill(false)
 
     this.level = 1
+    this.started = false
 
     this.adsr = {
       attack: 0,
@@ -25,7 +26,6 @@ class Oscillator {
       voice.type = this.type
       voice.frequency.setValueAtTime(0, audioCtx.currentTime)
       voice.connect(gainNode).connect(audioCtx.destination)
-      voice.start()
 
       this.voices.push({
         voice,
@@ -34,6 +34,10 @@ class Oscillator {
         timeout: null
       })
     }
+  }
+
+  enableAllVoices = () => {
+    this.voices.forEach(({ voice }) => voice.start())
   }
 
 
@@ -60,6 +64,13 @@ class Oscillator {
 
 
   startVoice = note => {
+
+    // Have to "start" all voices on first keypress, otherwise modern browsers will complain and no sound will play
+    if (!this.started) {
+      this.enableAllVoices()
+      this.started = true
+    }
+
     const matchingVoice = this.getVoiceWithNote(note)
 
     if (matchingVoice) {
