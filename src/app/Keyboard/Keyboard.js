@@ -56,10 +56,11 @@ const Keyboard = ({ octaves = 6, octaveOffset = 3 }) => {
   return (
     <div className="keyboard">
       { [...Array(octaves)].map((_, octave) => (
-        <div className="keyboard__octave">
+        <div className="keyboard__octave" key={ octave }>
           <div className="keyboard__key-group--white">
             { [...Array(7)].map((_, key) => (
               <div
+                key={ key }
                 className="keyboard__key--white"
                 onMouseDown={ () => keyPressed(octave, getKeyIndex(key, true)) }
                 onMouseUp={ () => keyUnpressed(octave, key, true) }
@@ -72,6 +73,7 @@ const Keyboard = ({ octaves = 6, octaveOffset = 3 }) => {
           <div className="keyboard__key-group--black">
             { [...Array(5)].map((_, key) => (
               <div
+                key={ key }
                 className="keyboard__key--black"
                 onMouseDown={ () => keyPressed(octave, getKeyIndex(key, false)) }
                 onMouseUp={ () => keyUnpressed(octave, key, false) }
