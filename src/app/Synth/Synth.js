@@ -51,6 +51,7 @@ const Synth = () => {
           />
         </div>
       </div>
+
       <Keyboard />
     </div>
   )

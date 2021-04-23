@@ -15,10 +15,10 @@ class Audio {
     const osc = this.oscillators[oscIndex]
 
     this.oscillators[oscIndex].adsr = {
-        attack: attack || osc.adsr.attack,
-        decay: decay || osc.adsr.decay,
-        sustain: sustain || osc.adsr.sustain,
-        release: release || osc.adsr.release
+        attack: (attack !== 0 && !attack) ? osc.adsr.attack : attack,
+        decay: (decay !== 0 && !decay) ? osc.adsr.decay : decay,
+        sustain: (sustain !== 0 && !sustain) ? osc.adsr.sustain : sustain,
+        release: (release !== 0 && !release) ? osc.adsr.release : release
     }
   }
 

@@ -34,7 +34,9 @@ const Knob = ({
     setInitialDragPos({ x: -1, y: -1 })
   }
 
-  const onMouseMove = ({ clientX, clientY }) => { setMousePos({ x: clientX, y: clientY }) }
+  const onMouseMove = ({ clientX: x, clientY: y }) => {
+    setMousePos({ x, y })
+  }
 
   const onWheel = ({ deltaY }) => {
     const realValue = calculateRealValue(knobValue) + (-deltaY / 1000)
@@ -44,6 +46,9 @@ const Knob = ({
   }
 
   const calculateRealValue = useCallback(value => {
+    if (value === 0) return min
+    if (value === 1) return max
+
     const val = min + (value * (max - min))
     return Math.round((val +  Number.EPSILON) * Math.pow(10, places)) / Math.pow(10, places)
   }, [max, min, places])

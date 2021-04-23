@@ -98,33 +98,34 @@ class Oscillator {
     const voiceOsc = this.voices[index]
     voiceOsc.voice.frequency.value = calculateNoteFrequency(note)
     // voiceOsc.gainNode.gain.setTargetAtTime(this.level / activeVoices, this.audioCtx.currentTime, this.adsr.attack / 10)
-    voiceOsc.gainNode.gain.linearRampToValueAtTime(this.level / activeVoices, this.audioCtx.currentTime + this.adsr.attack)
+    voiceOsc.gainNode.gain.setValueAtTime(0.001, this.audioCtx.currentTime)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(this.level, this.audioCtx.currentTime + this.adsr.attack)
 
     voiceOsc.note = note
 
-    this.normalizeGains(index)
+    // this.normalizeGains(index)
   }
 
   stopVoiceByIndex = index => {
     const voiceOsc = this.voices[index]
+
+    voiceOsc.gainNode.gain.cancelScheduledValues(this.audioCtx.currentTime)
+    voiceOsc.gainNode.gain.setValueAtTime(voiceOsc.gainNode.gain.value, this.audioCtx.currentTime)
     // voiceOsc.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, this.adsr.release / 10)
-    voiceOsc.gainNode.gain.linearRampToValueAtTime(0, this.audioCtx.currentTime + this.adsr.release)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + this.adsr.release)
 
 
     const stop = () => {
-      voiceOsc.voice.frequency.value = 0
-      voiceOsc.gainNode.gain.value = 0
+      voiceOsc.gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime)
+      // voiceOsc.voice.frequency.setValueAtTime(0, this.audioCtx.currentTime)
       voiceOsc.note = -1
       voiceOsc.timeout = null
-
-      console.log('release end')
     }
 
-    console.log(this.voices)
     if (this.adsr.release === 0) {
       stop()
     } else {
-      voiceOsc.timeout = setTimeout(stop, this.adsr.release * 1000)
+      this.voices[index].timeout = setTimeout(stop, this.adsr.release * 1000)
     }
   }
 
@@ -146,8 +147,8 @@ class Oscillator {
     const maxLevel = this.level * ((Math.pow(2, activeVoices) - 1) / Math.pow(2, activeVoices))
 
     this.voices.forEach((voice, i) => {
-      if (voice.note > -1 && i !== exclude) {
-        voice.gainNode.gain.value = maxLevel / activeVoices
+      if (voice.note > -1) {
+        voice.gainNode.gain.setValueAtTime(maxLevel / activeVoices / 4, this.audioCtx.currentTime)
       }
     })
   }

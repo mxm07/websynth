@@ -5,7 +5,31 @@ const TUNING_FREQUENCY = 440
 
 export const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ]
 
-export const calculateNoteFrequency = (noteIndex) => {
+
+/*
+ _______________________________________                        ____________________________
+|  | | | |  |  | | | | | |  |  | | | |  |                      |  | | | | | |  |  | | | |  |
+|  | | | |  |  | | | | | |  |  | | | |  |                      |  | | | | | |  |  | | | |  |
+|  |2| |3|  |  |5| |6| |7|  |  |9| |0|  |                      |  |s| |d| |f|  |  |h| |j|  |
+|  |_| |_|  |  |_| |_| |_|  |  |_| |_|  | next rows of keys -> |  |_| |_| |_|  |  |_| |_|  |
+|   |   |   |   |   |   |   |   |   |   |                      |   |   |   |   |   |   |   |
+| q | w | e | r | t | y | u | i | o | p |                      | z | x | c | v | b | n | m |
+|___|___|___|___|___|___|___|___|___|___|                      |___|___|___|___|___|___|___|
+
+*/
+export const keyboardMap = [
+  'q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'i', '9', 'o', '0', 'p',
+  'z', 's', 'x', 'd', 'c', 'f', 'v', 'g', 'b', 'h', 'n', 'j', 'm'
+]
+
+
+export const calculateNoteFrequency = noteIndex => {
+  if (!noteIndex) {
+    return 0
+  }
+
+  console.log(noteIndex)
+
   const absoluteTuningNoteIndex = TUNING_OCTAVE * 12 + TUNING_NOTE_INDEX
   const noteIndexDelta = noteIndex - absoluteTuningNoteIndex
   const noteFrequency = TUNING_FREQUENCY * Math.pow(2, noteIndexDelta / 12)
