@@ -48,7 +48,8 @@
       width: 20px;
       height: 100%;
 
-      &:hover { background-color: #bbb; }
+      &:hover { background-color: #ccc; }
+      &:active, &.active { background-color: #bbb; }
     }
 
     &--black {
@@ -67,7 +68,8 @@
         margin-left: 27px;
       }
 
-      &:hover { background-color: #444; }
+      &:hover { background-color: #555; }
+      &:active, &.active { background-color: #444; }
     }
   }
 }

@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 import { Knob } from 'Components'
 import Audio from 'Audio'
+import { roundToPlaces } from 'Utils'
 import Keyboard from '../Keyboard'
 import { Sine, Tri, Square, Saw } from 'Assets/svg'
 
 import './Synth.scss'
+
+const timeFormatter = value => value < 1000 ? `${value}ms` : `${roundToPlaces(value / 1000, 1)}s`
 
 const Synth = () => {
   const [selectedWaveform, setSelectedWaveform] = useState('sine')
@@ -19,11 +22,34 @@ const Synth = () => {
     <div className="synth">
       <div className="synth__osc">
 
-        <Knob label="Volume" min={0} max={3.4} onChange={ Audio.setGain } />
-        <Knob label="Attack" min={0} max={5} suffix="s" onChange={ value => Audio.setAdsr({ attack: value }) } />
+        <Knob
+          label="Volume"
+          min={0}
+          max={100}
+          places={0}
+          suffix="%"
+          onChange={ value => Audio.setLevel(value / 100) }
+        />
+        <Knob
+          label="Attack"
+          min={0}
+          max={10000}
+          initialValue={0.5}
+          logScaling={10}
+          format={ timeFormatter }
+          onChange={ value => Audio.setAdsr({ attack: value / 1000 }) }
+        />
+
         <Knob label="Decay" min={0} max={100} suffix="ms" />
         <Knob label="Sustain" min={0} max={100} suffix="ms" />
-        <Knob label="Release" min={0} max={5} suffix="s" onChange={ value => Audio.setAdsr({ release: value }) } />
+        <Knob
+          label="Release"
+          min={0}
+          max={10000}
+          initialValue={15}
+          logScaling={10}
+          format={ timeFormatter }
+          onChange={ value => Audio.setAdsr({ release: value / 1000 }) } />
 
         <div>
           <Sine

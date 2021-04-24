@@ -28,8 +28,6 @@ export const calculateNoteFrequency = noteIndex => {
     return 0
   }
 
-  console.log(noteIndex)
-
   const absoluteTuningNoteIndex = TUNING_OCTAVE * 12 + TUNING_NOTE_INDEX
   const noteIndexDelta = noteIndex - absoluteTuningNoteIndex
   const noteFrequency = TUNING_FREQUENCY * Math.pow(2, noteIndexDelta / 12)

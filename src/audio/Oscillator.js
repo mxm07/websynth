@@ -9,7 +9,7 @@ class Oscillator {
     this.activeVoices = Array(8)
     this.activeVoices.fill(false)
 
-    this.level = 1
+    this.level = 0.2
     this.started = false
 
     this.adsr = {
@@ -93,17 +93,18 @@ class Oscillator {
   }
 
   startVoiceByIndex = (note, index) => {
-    const activeVoices = this.getActiveVoices() + 1 // +1 to include the voice currently being added
+    console.log(this.level)
+
+    if (this.level === 0) return
+
+    // this.normalizeGains(index)
 
     const voiceOsc = this.voices[index]
     voiceOsc.voice.frequency.value = calculateNoteFrequency(note)
-    // voiceOsc.gainNode.gain.setTargetAtTime(this.level / activeVoices, this.audioCtx.currentTime, this.adsr.attack / 10)
     voiceOsc.gainNode.gain.setValueAtTime(0.001, this.audioCtx.currentTime)
     voiceOsc.gainNode.gain.exponentialRampToValueAtTime(this.level, this.audioCtx.currentTime + this.adsr.attack)
 
     voiceOsc.note = note
-
-    // this.normalizeGains(index)
   }
 
   stopVoiceByIndex = index => {
@@ -148,7 +149,7 @@ class Oscillator {
 
     this.voices.forEach((voice, i) => {
       if (voice.note > -1) {
-        voice.gainNode.gain.setValueAtTime(maxLevel / activeVoices / 4, this.audioCtx.currentTime)
+        voice.gainNode.gain.setValueAtTime(maxLevel / activeVoices, this.audioCtx.currentTime)
       }
     })
   }

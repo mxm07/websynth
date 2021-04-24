@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import classNames from 'classnames'
+import { roundToPlaces } from 'Utils'
 import './Knob.scss'
 
 const body = document.querySelector('body')
@@ -12,26 +13,54 @@ const Knob = ({
   label = '',
   min = 0,
   max = 100,
+  initialValue = min,
   places = 1,
   suffix = '',
+  format = v => v,
+  logScaling = 0,
   onChange = () => {}
 }) => {
   const [mouseDown, setMouseDown] = useState(false)
   const [mousePos, setMousePos] = useState({ x: -1, y: -1 })
-  const [initialDragPos, setInitialDragPos] = useState({ x: -1, y: -1 })
-  const [initialValue, setInitialValue] = useState(0)
+  const [preDragPos, setPreDragPos] = useState({ x: -1, y: -1 })
+  const [preDragValue, setPreDragValue] = useState(0)
   const [knobValue, setKnobValue] = useState(0)
+
+
+  // takes a value between 0 and 1, scales to be between min and max (scales lograithmically if 'logScaling' is set)
+  const calculateRealValue = useCallback(value => {
+    let val
+
+    if (logScaling > 0) {
+      // Convert the value into a proportion of the log scale, then convert back by raising 10 to the power of it
+      // Subtract one at the end to reach min
+      val = min + Math.pow(logScaling, value * (Math.log(max + 1 - min) / Math.log(logScaling))) - 1
+    } else {
+      val = min + (value * (max - min))
+    }
+
+    return roundToPlaces(val, places)
+  }, [max, min, places, logScaling])
+
+  // opposite of calculateRealValue, takes a scaled value and returns a value between 0 and 1
+  const calculateKnobValue = useCallback(value => {
+    if (logScaling > 0) {
+      return Math.log(value + min + 1) / Math.log(max + 1 - min)
+    }
+
+    return (value - min) / (max - min)
+  }, [min, max, logScaling])
 
 
   const onMouseDown = () => {
     setMouseDown(true)
-    setInitialDragPos(mousePos)
-    setInitialValue(knobValue)
+    setPreDragPos(mousePos)
+    setPreDragValue(knobValue)
   }
 
   const onMouseUp = () => {
     setMouseDown(false)
-    setInitialDragPos({ x: -1, y: -1 })
+    setPreDragPos({ x: -1, y: -1 })
   }
 
   const onMouseMove = ({ clientX: x, clientY: y }) => {
@@ -39,20 +68,12 @@ const Knob = ({
   }
 
   const onWheel = ({ deltaY }) => {
-    const realValue = calculateRealValue(knobValue) + (-deltaY / 1000)
+    const delta = -deltaY / 1000
+    const realValue = calculateRealValue(knobValue) + delta
     const newValue = clamp((realValue - min) / (max - min))
 
     setKnobValue(newValue)
   }
-
-  const calculateRealValue = useCallback(value => {
-    if (value === 0) return min
-    if (value === 1) return max
-
-    const val = min + (value * (max - min))
-    return Math.round((val +  Number.EPSILON) * Math.pow(10, places)) / Math.pow(10, places)
-  }, [max, min, places])
-
 
   useEffect(() => {
     body.addEventListener('mouseup', onMouseUp)
@@ -68,22 +89,22 @@ const Knob = ({
 
   useEffect(() => {
     if (mouseDown) {
-      // Manhattan distance between current cursor pos and initial cursor pos
-      const xdiff = mousePos.x - initialDragPos.x
-      const ydiff = mousePos.y - initialDragPos.y
+      // Manhattan distance between current cursor pos and pre cursor pos
+      const xdiff = mousePos.x - preDragPos.x
+      const ydiff = mousePos.y - preDragPos.y
       let delta = xdiff - ydiff
 
       // Scale to drag range, and normalize between 0 and 1
-      const newValue = clamp(initialValue + delta / DRAG_RANGE)
+      const newValue = clamp(preDragValue + delta / DRAG_RANGE)
 
       setKnobValue(newValue)
     }
   }, [
     mousePos,
     mouseDown,
-    initialDragPos.x,
-    initialDragPos.y,
-    initialValue,
+    preDragPos.x,
+    preDragPos.y,
+    preDragValue,
     calculateRealValue,
     onChange
   ])
@@ -92,9 +113,13 @@ const Knob = ({
     onChange(calculateRealValue(knobValue))
   }, [knobValue, calculateRealValue, onChange])
 
+  useEffect(() => {
+    setKnobValue(calculateKnobValue(initialValue))
+  }, [initialValue, calculateKnobValue])
 
 
   const degreeRotation = 45 + 270 * knobValue
+  const realValue = calculateRealValue(knobValue)
 
   return (
     <div className="knob-wrapper">
@@ -105,7 +130,7 @@ const Knob = ({
       >
         <div className="knob__marker" style={{ transform: `translateX(-50%) rotate(${degreeRotation}deg)` }} />
         <div className="knob__value">
-          { `${calculateRealValue(knobValue)}${suffix}` }
+          { `${format(`${realValue}${suffix}`)}` }
         </div>
       </div>
       { label &&
