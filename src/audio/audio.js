@@ -22,6 +22,11 @@ class Audio {
     }
   }
 
+  setLPF = (values, oscIndex = 0) => {
+    const osc = this.oscillators[oscIndex]
+    osc.setLPF(values)
+  }
+
   startOscillator = (note, oscIndex = 0) => {
     this.oscillators[oscIndex].startVoice(note)
   }
@@ -33,6 +38,10 @@ class Audio {
   setLevel = (level, oscIndex = 0) => {
     this.oscillators[oscIndex].level = level
   }
+
+  getAnalyser = (oscIndex = 0) => (
+    this.oscillators[oscIndex].analyser
+  )
 }
 
 export default (new Audio())

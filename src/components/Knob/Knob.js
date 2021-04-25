@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import classNames from 'classnames'
-import { roundToPlaces } from 'Utils'
 import './Knob.scss'
 
 const body = document.querySelector('body')
@@ -42,7 +41,7 @@ const Knob = ({
       val = max - val + min
     }
 
-    return roundToPlaces(val, places)
+    return val.toFixed(places)
   }, [max, min, places, logScaling])
 
   // opposite of calculateRealValue, takes a scaled value and returns a value between 0 and 1

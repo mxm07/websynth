@@ -1,7 +1,3 @@
-export const roundToPlaces = (value, places) => (
-  Math.round((value + Number.EPSILON) * Math.pow(10, places)) / Math.pow(10, places)
-)
-
 export const simulateEvent = (el, eventType) => {
   let event
 

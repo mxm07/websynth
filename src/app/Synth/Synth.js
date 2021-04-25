@@ -2,13 +2,14 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 import { Knob } from 'Components'
 import Audio from 'Audio'
-import { roundToPlaces } from 'Utils'
 import Keyboard from '../Keyboard'
+import Visualizer from '../Visualizer'
 import { Sine, Tri, Square, Saw } from 'Assets/svg'
 
 import './Synth.scss'
 
-const timeFormatter = value => value < 1000 ? `${value}ms` : `${roundToPlaces(value / 1000, 1)}s`
+const timeFormatter = value => value < 1000 ? `${value}ms` : `${parseInt(value / 1000).toFixed(0)}s`
+const hzFormatter = value => `${parseInt(value).toFixed(0)}hz`
 
 const Synth = () => {
   const [selectedWaveform, setSelectedWaveform] = useState('sine')
@@ -71,6 +72,24 @@ const Synth = () => {
           format={ timeFormatter }
           onChange={ value => Audio.setAdsr({ release: value / 1000 }) } />
 
+        <Knob
+          label="LPF Freq"
+          min={8}
+          max={22050}
+          initialValue={440}
+          logScaling={10}
+          format={ hzFormatter }
+          onChange={ value => Audio.setLPF({ freq: value }) } />
+
+        <Knob
+          label="LPF Res"
+          min={0}
+          max={100}
+          initialValue={0}
+          suffix="%"
+          places={0}
+          onChange={ value => Audio.setLPF({ res: value }) } />
+
         <div>
           <Sine
             className={ classNames('waveform-svg', selectedWaveform === 'sine' && 'selected') }
@@ -96,6 +115,8 @@ const Synth = () => {
             animate={ selectedWaveform === 'triangle'}
           />
         </div>
+
+        <Visualizer />
       </div>
 
       <Keyboard />

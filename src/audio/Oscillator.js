@@ -9,6 +9,14 @@ class Oscillator {
     this.activeVoices = Array(8)
     this.activeVoices.fill(false)
 
+
+    this.lpf = audioCtx.createBiquadFilter()
+    this.lpf.type = 'lowpass'
+
+    this.analyser = audioCtx.createAnalyser()
+    this.analyser.fftSize = 8192
+
+
     this.level = 0.2
     this.started = false
 
@@ -25,7 +33,11 @@ class Oscillator {
 
       voice.type = this.type
       voice.frequency.setValueAtTime(0, audioCtx.currentTime)
-      voice.connect(gainNode).connect(audioCtx.destination)
+      voice
+        .connect(gainNode)
+        .connect(this.lpf)
+        .connect(this.analyser)
+        .connect(audioCtx.destination)
 
       this.voices.push({
         voice,
@@ -168,6 +180,11 @@ class Oscillator {
 
   setLevel = (level) => {
     this.level = level
+  }
+
+  setLPF = ({ freq, res }) => {
+    if (freq) { this.lpf.frequency.setValueAtTime(freq, this.audioCtx.currentTime) }
+    if (res) { this.lpf.Q.setValueAtTime(res, this.audioCtx.currentTime) }
   }
 
   setType = type => {
