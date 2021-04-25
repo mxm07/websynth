@@ -27,16 +27,19 @@ const Knob = ({
   const [knobValue, setKnobValue] = useState(0)
 
 
-  // takes a value between 0 and 1, scales to be between min and max (scales lograithmically if 'logScaling' is set)
+  // takes a value between 0 and 1, scales to be between min and max (scales logarithmically if 'logScaling' is set)
   const calculateRealValue = useCallback(value => {
     let val
 
-    if (logScaling > 0) {
+    if (logScaling === 0) {
+      val = min + (value * (max - min))
+    } else if (logScaling > 0) {
       // Convert the value into a proportion of the log scale, then convert back by raising 10 to the power of it
       // Subtract one at the end to reach min
       val = min + Math.pow(logScaling, value * (Math.log(max + 1 - min) / Math.log(logScaling))) - 1
     } else {
-      val = min + (value * (max - min))
+      val = min + Math.pow(-logScaling, (1 - value) * (Math.log(max + 1 - min) / Math.log(-logScaling))) - 1
+      val = max - val + min
     }
 
     return roundToPlaces(val, places)
@@ -44,11 +47,13 @@ const Knob = ({
 
   // opposite of calculateRealValue, takes a scaled value and returns a value between 0 and 1
   const calculateKnobValue = useCallback(value => {
-    if (logScaling > 0) {
-      return Math.log(value + min + 1) / Math.log(max + 1 - min)
+    if (logScaling === 0) {
+      return (value - min) / (max - min)
+    } else if (logScaling > 0) {
+      return Math.log(value - min + 1) / Math.log(max - min + 1)
+    } else {
+      return Math.log((1 - value) - min + 1) / Math.log(max - min + 1)
     }
-
-    return (value - min) / (max - min)
   }, [min, max, logScaling])
 
 

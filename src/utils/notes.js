@@ -34,3 +34,6 @@ export const calculateNoteFrequency = noteIndex => {
 
   return noteFrequency
 }
+
+export const gainValueToDecibels = value => 20 * (Math.log(value) / Math.log(10))
+export const decibelsToGainValue = decibels => Math.pow(10, decibels / 20)

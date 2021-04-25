@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { keyboardMap, simulateEvent } from 'Utils'
+import { keyboardMap } from 'Utils'
 import Audio from 'Audio'
 
 import './Keyboard.scss'
 
 
 const body = document.querySelector('body')
-
-
 
 const getKeyIndex = (key, isWhite) => {
   if (isWhite) {
@@ -18,11 +16,9 @@ const getKeyIndex = (key, isWhite) => {
 }
 
 
-
 const Keyboard = ({ octaves = 6, octaveOffset = 4 }) => {
   const keyRefs = useRef({})
   const [mouseDown, setMouseDown] = useState(false)
-
 
 
   const keyPressed = (octave, key, isWhite) => {
@@ -50,32 +46,26 @@ const Keyboard = ({ octaves = 6, octaveOffset = 4 }) => {
     Audio.stopOscillator((octaveOffset + octave) * 12 + keyIndex)
   }
 
-  const keyboardDown = e => {
-    const key = keyboardMap.indexOf(e.key)
-
-    if (key > -1) {
-      Audio.startOscillator(octaveOffset * 12 + key)
-      keyRefs.current[octaveOffset * 12 + key].classList.add('active')
-    }
-
-  }
-
-  const keyboardUp = e => {
-    const key = keyboardMap.indexOf(e.key)
-
-    if (key > -1) {
-      Audio.stopOscillator(octaveOffset * 12 + key)
-      keyRefs.current[octaveOffset * 12 + key].classList.remove('active')
-    }
-  }
-
-
-
   useEffect(() => {
     const mouseDownCallback = () => setMouseDown(true)
     const mouseUpCallback = () => setMouseDown(false)
-    const keyboardDownCallback = e => keyboardDown(e, octaveOffset)
-    const keyboardUpCallback = e => keyboardUp(e, octaveOffset)
+    const keyboardDownCallback = e => {
+      const key = keyboardMap.indexOf(e.key)
+
+      if (key > -1) {
+        Audio.startOscillator(octaveOffset * 12 + key)
+        keyRefs.current[octaveOffset * 12 + key].classList.add('active')
+      }
+    }
+
+    const keyboardUpCallback = e =>{
+      const key = keyboardMap.indexOf(e.key)
+
+      if (key > -1) {
+        Audio.stopOscillator(octaveOffset * 12 + key)
+        keyRefs.current[octaveOffset * 12 + key].classList.remove('active')
+      }
+    }
 
     const visibilityChange = e => { console.log('VISIBILITY CHANGE', e) }
 

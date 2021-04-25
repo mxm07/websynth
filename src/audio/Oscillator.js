@@ -1,4 +1,4 @@
-import { calculateNoteFrequency } from 'Utils'
+import { calculateNoteFrequency, decibelsToGainValue } from 'Utils'
 
 class Oscillator {
   constructor(audioCtx) {
@@ -31,7 +31,8 @@ class Oscillator {
         voice,
         gainNode,
         note: -1,
-        timeout: null
+        timeout: null,
+        released: false
       })
     }
   }
@@ -74,6 +75,14 @@ class Oscillator {
     const matchingVoice = this.getVoiceWithNote(note)
 
     if (matchingVoice) {
+      /*
+        If startVoice is spammed (like in the case of a keydown listener), we should short-circuit
+        the voice being played, otherwise we'll have instant stopping-and-starting over and over,
+        which causes audio artifacts. Only voices with the same note that have been released previously
+        should be re-started
+      */
+      if (!matchingVoice.released) { return }
+
       // instantly stop any voice with the same note so we can start a new one
       this.stopVoiceByIndexInstant(this.voices.indexOf(matchingVoice))
     }
@@ -93,33 +102,34 @@ class Oscillator {
   }
 
   startVoiceByIndex = (note, index) => {
-    console.log(this.level)
-
     if (this.level === 0) return
 
-    // this.normalizeGains(index)
+    const { attack, decay, sustain } = this.adsr
 
     const voiceOsc = this.voices[index]
-    voiceOsc.voice.frequency.value = calculateNoteFrequency(note)
-    voiceOsc.gainNode.gain.setValueAtTime(0.001, this.audioCtx.currentTime)
-    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(this.level, this.audioCtx.currentTime + this.adsr.attack)
-
+    voiceOsc.released = false
     voiceOsc.note = note
+    voiceOsc.voice.frequency.value = calculateNoteFrequency(note)
+    voiceOsc.gainNode.gain.setValueAtTime(0.0001, this.audioCtx.currentTime)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(this.level, this.audioCtx.currentTime + attack)
+
+    // Sustain specified in dB -- convert to gain level units first, then multiply by level to scale it to master osc level
+    const sustainLevel = this.level * decibelsToGainValue(sustain)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(sustainLevel, this.audioCtx.currentTime + attack + decay)
   }
 
   stopVoiceByIndex = index => {
     const voiceOsc = this.voices[index]
+    voiceOsc.released = true
 
     voiceOsc.gainNode.gain.cancelScheduledValues(this.audioCtx.currentTime)
     voiceOsc.gainNode.gain.setValueAtTime(voiceOsc.gainNode.gain.value, this.audioCtx.currentTime)
-    // voiceOsc.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, this.adsr.release / 10)
-    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + this.adsr.release)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + this.adsr.release)
 
 
     const stop = () => {
-      voiceOsc.gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime)
-      // voiceOsc.voice.frequency.setValueAtTime(0, this.audioCtx.currentTime)
       voiceOsc.note = -1
+      voiceOsc.gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime)
       voiceOsc.timeout = null
     }
 
