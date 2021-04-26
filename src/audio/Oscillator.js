@@ -6,15 +6,11 @@ class Oscillator {
     this.type = 'sine'
     this.voices = []
 
-    this.activeVoices = Array(8)
-    this.activeVoices.fill(false)
-
-
     this.lpf = audioCtx.createBiquadFilter()
     this.lpf.type = 'lowpass'
 
     this.analyser = audioCtx.createAnalyser()
-    this.analyser.fftSize = 8192
+    this.analyser.fftSize = 4096
 
 
     this.level = 0.2

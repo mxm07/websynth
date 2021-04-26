@@ -42,6 +42,10 @@ class Audio {
   getAnalyser = (oscIndex = 0) => (
     this.oscillators[oscIndex].analyser
   )
+
+  getActiveVoices = (oscIndex = 0) => (
+    this.oscillators[oscIndex].getActiveVoices()
+  )
 }
 
 export default (new Audio())

@@ -5,8 +5,12 @@ import './Visualizer.scss'
 const Visualizer = () => {
   const canvasRef = useRef(null)
 
-  const drawVisualization = useCallback((ctx, analyser, dataArray) => {
-    analyser.getByteFrequencyData(dataArray)
+  const drawVisualization = useCallback((ctx, analyser, dataArray, oscilloscope = false) => {
+    if (oscilloscope) {
+      analyser.getByteTimeDomainData(dataArray)
+    } else {
+      analyser.getByteFrequencyData(dataArray)
+    }
 
     const WIDTH = ctx.canvas.width
     const HEIGHT = ctx.canvas.height
@@ -38,8 +42,6 @@ const Visualizer = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    console.log(canvas)
-    console.log(canvas.style)
     canvas.width  = 400;
     canvas.height = 100;
     canvas.style.width  = '400px';

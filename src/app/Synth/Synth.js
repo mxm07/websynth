@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { Knob } from 'Components'
 import Audio from 'Audio'
@@ -13,6 +13,7 @@ const hzFormatter = value => `${parseInt(value).toFixed(0)}hz`
 
 const Synth = () => {
   const [selectedWaveform, setSelectedWaveform] = useState('sine')
+
 
   const waveformClick = type => () => {
     Audio.setOscType(type)
@@ -116,6 +117,7 @@ const Synth = () => {
           />
         </div>
 
+        <div>{ activeVoices }</div>
         <Visualizer />
       </div>
 
