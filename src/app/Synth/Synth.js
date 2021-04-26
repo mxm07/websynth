@@ -117,7 +117,6 @@ const Synth = () => {
           />
         </div>
 
-        <div>{ activeVoices }</div>
         <Visualizer />
       </div>
 
