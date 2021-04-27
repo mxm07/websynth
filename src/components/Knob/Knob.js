@@ -81,14 +81,22 @@ const Knob = ({
 
   useEffect(() => {
     body.addEventListener('mouseup', onMouseUp)
+    body.addEventListener('touchup', onMouseUp)
 
-    return () => body.removeEventListener('mouseup', onMouseUp)
+    return () => {
+      body.removeEventListener('mouseup', onMouseUp)
+      body.removeEventListener('touchup', onMouseUp)
+    }
   }, [])
 
   useEffect(() => {
     body.addEventListener('mousemove', onMouseMove)
+    body.addEventListener('touchmove', onMouseMove)
 
-    return () => body.removeEventListener('mousemove', onMouseMove)
+    return () => {
+      body.removeEventListener('mousemove', onMouseMove)
+      body.removeEventListener('touchmove', onMouseMove)
+    }
   }, [])
 
   useEffect(() => {
@@ -130,6 +138,7 @@ const Knob = ({
       <div
         className={ classNames('knob', className) }
         onMouseDown={ onMouseDown }
+        onTouchStart={ onMouseDown }
         onWheel={ onWheel }
       >
         <div className="knob__marker" style={{ transform: `translateX(-50%) rotate(${degreeRotation}deg)` }} />
