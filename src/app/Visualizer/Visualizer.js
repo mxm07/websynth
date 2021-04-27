@@ -21,7 +21,7 @@ const Visualizer = () => {
     let barHeight
     let curX = 0
 
-    ctx.lineWidth = 1
+    ctx.lineWidth = 2
     ctx.beginPath()
 
     for (let i = 0; i < bufferLength; i++) {
@@ -30,9 +30,9 @@ const Visualizer = () => {
       const x = curX
       const y = HEIGHT - barHeight * 0.5
 
-      ctx.lineTo(x, y)
+      ctx.lineTo(x, y - 1)
 
-      curX += barWidth + 1
+      curX += barWidth * 3 + 1
     }
 
     ctx.strokeStyle = '#87e1ed'
@@ -42,15 +42,13 @@ const Visualizer = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    canvas.width  = 400;
-    canvas.height = 100;
-    canvas.style.width  = '400px';
-    canvas.style.height = '100px';
+    const computedStyle = window.getComputedStyle(canvas)
+    canvas.width = parseInt(computedStyle.width, 10)
+    canvas.height = parseInt(computedStyle.height, 10)
 
     const canvasCtx = canvas.getContext('2d')
-    canvasCtx.imageSmoothingEnabled = true;
 
-    const analyser = Audio.getAnalyser()
+    const analyser = Audio.analyser
     const bufferLength = analyser.frequencyBinCount
     const dataArray = new Uint8Array(bufferLength)
 

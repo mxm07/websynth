@@ -5,6 +5,7 @@ const Square = ({
   animateOnHover = true,
   width = 20,
   height = 10,
+  index = 0,
   ...rest
 }) => {
   const [animating, setAnimating] = useState(false)
@@ -19,7 +20,7 @@ const Square = ({
       { ...rest }
     >
       <defs>
-        <path id="square" fill="transparent" stroke='white' strokeWidth={ 20 }
+        <path id={`square${index}`} fill="transparent" strokeWidth={ 20 }
               d="M0 10
                 L60 10 L 60 90
                 L 160 90 L 160 10
@@ -28,7 +29,7 @@ const Square = ({
                 L 460 10 L 460 90"
               />
       </defs>
-        <use xlinkHref="#square" x="0" y="0">
+        <use xlinkHref={`#square${index}`} x="0" y="0">
           { (animate || animating) &&
             <animate attributeName="x" from="0" to="-200" dur="2s" repeatCount="indefinite" />
           }

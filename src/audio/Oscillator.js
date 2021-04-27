@@ -1,20 +1,20 @@
 import { calculateNoteFrequency, decibelsToGainValue } from 'Utils'
 
 class Oscillator {
-  constructor(audioCtx) {
+  constructor(audioCtx, analyser) {
     this.audioCtx = audioCtx
     this.type = 'sine'
     this.voices = []
+    this.started = false
 
     this.lpf = audioCtx.createBiquadFilter()
     this.lpf.type = 'lowpass'
 
-    this.analyser = audioCtx.createAnalyser()
-    this.analyser.fftSize = 4096
-
 
     this.level = 0.2
-    this.started = false
+    this.globalGain = audioCtx.createGain()
+    this.globalGain.gain.setValueAtTime(this.level, audioCtx.currentTime)
+
 
     this.adsr = {
       attack: 0,
@@ -32,7 +32,8 @@ class Oscillator {
       voice
         .connect(gainNode)
         .connect(this.lpf)
-        .connect(this.analyser)
+        .connect(this.globalGain)
+        .connect(analyser)
         .connect(audioCtx.destination)
 
       this.voices.push({
@@ -119,10 +120,10 @@ class Oscillator {
     voiceOsc.note = note
     voiceOsc.voice.frequency.value = calculateNoteFrequency(note)
     voiceOsc.gainNode.gain.setValueAtTime(0.0001, this.audioCtx.currentTime)
-    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(this.level, this.audioCtx.currentTime + attack)
+    voiceOsc.gainNode.gain.exponentialRampToValueAtTime(1, this.audioCtx.currentTime + attack)
 
     // Sustain specified in dB -- convert to gain level units first, then multiply by level to scale it to master osc level
-    const sustainLevel = this.level * decibelsToGainValue(sustain)
+    const sustainLevel = decibelsToGainValue(sustain)
     voiceOsc.gainNode.gain.exponentialRampToValueAtTime(sustainLevel, this.audioCtx.currentTime + attack + decay)
   }
 
@@ -163,7 +164,7 @@ class Oscillator {
 
   normalizeGains = (exclude = -1) => {
     const activeVoices = this.getActiveVoices()
-    const maxLevel = this.level * ((Math.pow(2, activeVoices) - 1) / Math.pow(2, activeVoices))
+    const maxLevel = ((Math.pow(2, activeVoices) - 1) / Math.pow(2, activeVoices))
 
     this.voices.forEach((voice, i) => {
       if (voice.note > -1) {
@@ -174,8 +175,9 @@ class Oscillator {
 
 
 
-  setLevel = (level) => {
+  setLevel = level => {
     this.level = level
+    this.globalGain.gain.value = level
   }
 
   setLPF = ({ freq, res }) => {

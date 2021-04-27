@@ -1,49 +1,56 @@
 import Oscillator from './Oscillator'
+import { NUM_OSCILLATORS } from 'Constants'
 
 class Audio {
   constructor() {
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)()
     this.type = 'sine'
+    this.analyser = this.audioCtx.createAnalyser()
+    this.analyser.fftSize = 2048
 
     // initialize with one sine oscillator
-    this.oscillators = [new Oscillator(this.audioCtx)]
+    this.oscillators = [...Array(NUM_OSCILLATORS)].map(() => new Oscillator(this.audioCtx, this.analyser))
   }
 
-  setOscType = (type, oscIndex = 0) => this.oscillators[oscIndex].setType(type)
+  // Apply to oscillator with given index. If index not given, apply to all
+  applyTo = (func, oscIndex) => {
+    if (oscIndex || oscIndex === 0) {
+      const osc = this.oscillators[oscIndex]
+      func(osc)
+    } else {
+      this.oscillators.forEach(osc => func(osc))
+    }
+  }
 
-  setAdsr = ({ attack, decay, sustain, release }, oscIndex = 0) => {
-    const osc = this.oscillators[oscIndex]
+  setOscType = (type, oscIndex) => this.applyTo(osc => osc.setType(type), oscIndex)
 
-    this.oscillators[oscIndex].adsr = {
+  setAdsr = ({ attack, decay, sustain, release }, oscIndex) => this.applyTo(osc => {
+    osc.adsr = {
         attack: (attack !== 0 && !attack) ? osc.adsr.attack : attack,
         decay: (decay !== 0 && !decay) ? osc.adsr.decay : decay,
         sustain: (sustain !== 0 && !sustain) ? osc.adsr.sustain : sustain,
         release: (release !== 0 && !release) ? osc.adsr.release : release
     }
-  }
+  }, oscIndex)
 
-  setLPF = (values, oscIndex = 0) => {
-    const osc = this.oscillators[oscIndex]
+  setLPF = (values, oscIndex) => this.applyTo(osc => {
     osc.setLPF(values)
-  }
+  }, oscIndex)
 
-  startOscillator = (note, oscIndex = 0) => {
-    this.oscillators[oscIndex].startVoice(note)
-  }
+  startOscillator = (note, oscIndex) => this.applyTo(osc => {
+    osc.startVoice(note)
+  }, oscIndex)
 
-  stopOscillator = (note, oscIndex = 0) => {
-    this.oscillators[oscIndex].stopVoice(note)
-  }
+  stopOscillator = (note, oscIndex) => this.applyTo(osc => {
+    osc.stopVoice(note)
+  }, oscIndex)
 
-  setLevel = (level, oscIndex = 0) => {
-    this.oscillators[oscIndex].level = level
-  }
+  setLevel = (level, oscIndex) => this.applyTo(osc => {
+    console.log(level)
+    osc.setLevel(level)
+  }, oscIndex)
 
-  getAnalyser = (oscIndex = 0) => (
-    this.oscillators[oscIndex].analyser
-  )
-
-  getActiveVoices = (oscIndex = 0) => (
+  getActiveVoices = (oscIndex) => (
     this.oscillators[oscIndex].getActiveVoices()
   )
 }

@@ -4,10 +4,11 @@ html, body, #root, .app {
 }
 
 label, button, h1, h2, h3, h4, h5, p, div {
-  -webkit-user-select: none;       
+  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none; 
+  -ms-user-select: none;
   user-select: none;
+  color: #222;
 }
 
 .app {

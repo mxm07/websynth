@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { keyboardMap } from 'Utils'
+import { KEYBOARD_MAP } from 'Constants'
 import Audio from 'Audio'
 
 import './Keyboard.scss'
@@ -15,6 +15,8 @@ const getKeyIndex = (key, isWhite) => {
   return key <= 1 ? key * 2 + 1 : key * 2 + 2
 }
 
+// used in a window listener side-effect so keep outside of state
+let keysDown = []
 
 const Keyboard = ({ octaves = 6, octaveOffset = 4 }) => {
   const keyRefs = useRef({})
@@ -50,20 +52,28 @@ const Keyboard = ({ octaves = 6, octaveOffset = 4 }) => {
     const mouseDownCallback = () => setMouseDown(true)
     const mouseUpCallback = () => setMouseDown(false)
     const keyboardDownCallback = e => {
-      const key = keyboardMap.indexOf(e.key)
+      const key = KEYBOARD_MAP.indexOf(e.key)
 
-      if (key > -1) {
+      if (key > -1 && keysDown.indexOf(key) === -1) {
         Audio.startOscillator(octaveOffset * 12 + key)
-        keyRefs.current[octaveOffset * 12 + key].classList.add('active')
+        keysDown.push(key)
+
+        if (keyRefs.current && keyRefs.current[octaveOffset * 12 + key]) {
+          keyRefs.current[octaveOffset * 12 + key].classList.add('active')
+        }
       }
     }
 
     const keyboardUpCallback = e =>{
-      const key = keyboardMap.indexOf(e.key)
+      const key = KEYBOARD_MAP.indexOf(e.key)
 
-      if (key > -1) {
+      if (key > -1 && keysDown.indexOf(key) > -1) {
         Audio.stopOscillator(octaveOffset * 12 + key)
-        keyRefs.current[octaveOffset * 12 + key].classList.remove('active')
+        keysDown.splice(keysDown.indexOf(key), 1)
+
+        if (keyRefs.current && keyRefs.current[octaveOffset * 12 + key]) {
+          keyRefs.current[octaveOffset * 12 + key].classList.remove('active')
+        }
       }
     }
 
@@ -73,8 +83,6 @@ const Keyboard = ({ octaves = 6, octaveOffset = 4 }) => {
     body.addEventListener('mouseup', mouseUpCallback)
     body.addEventListener('keydown', keyboardDownCallback)
     body.addEventListener('keyup', keyboardUpCallback)
-
-    body.addEventListener('blur', visibilityChange)
 
     return () => {
       body.removeEventListener('mousedown', mouseDownCallback)

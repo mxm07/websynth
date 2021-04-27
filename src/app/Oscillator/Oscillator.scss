@@ -1,0 +1,25 @@
+
+.osc {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  padding: 10px 0 0 20px;
+  position: relative;
+
+  z-index: 1;
+
+  &:first-child {
+    padding-top: 30px;
+  }
+
+  & > * {
+    margin: 5px 15px 5px 5px;
+    display: inline-block;
+  }
+
+  &__label {
+    color: #2a2a2a;
+  }
+}

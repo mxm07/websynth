@@ -1,0 +1,24 @@
+.osc__waveforms {
+  width: 50px;
+  height: 50px;
+
+
+  .waveform-svg {
+    padding: 3px;
+    box-sizing: border-box;
+
+    width: 50%;
+    height: 50%;
+    float: left;
+
+    path {
+      stroke: #aaa;
+    }
+
+    &.selected {
+      path {
+        stroke: #fff;
+      }
+    }
+  }
+}
