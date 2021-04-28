@@ -70,11 +70,15 @@ const Knob = ({
   const onMouseMove = ({ clientX: x, clientY: y }) => {
     setMousePos({ x, y })
   }
+  const onTouchMove = ({ touches }) => {
+    const [x, y] = [touches[0].clientX, touches[0].clientY]
+    setMousePos({ x, y })
+  }
 
   const onWheel = ({ deltaY }) => {
-    const delta = -deltaY / 1000
-    const realValue = calculateRealValue(knobValue) + delta
-    const newValue = clamp((realValue - min) / (max - min))
+    const delta = -deltaY / 10000 // 0.01 or -0.01
+    console.log(delta)
+    const newValue = clamp(knobValue + delta)
 
     setKnobValue(newValue)
   }
@@ -91,11 +95,11 @@ const Knob = ({
 
   useEffect(() => {
     body.addEventListener('mousemove', onMouseMove)
-    body.addEventListener('touchmove', onMouseMove)
+    body.addEventListener('touchmove', onTouchMove)
 
     return () => {
       body.removeEventListener('mousemove', onMouseMove)
-      body.removeEventListener('touchmove', onMouseMove)
+      body.removeEventListener('touchmove', onTouchMove)
     }
   }, [])
 

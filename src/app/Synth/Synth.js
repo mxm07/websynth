@@ -11,7 +11,7 @@ const Synth = () => (
   <div className="synth">
     <div className="synth-inner">
       { [ ...Array(NUM_OSCILLATORS) ].map((_, i) => (
-        <Oscillator index={i} />
+        <Oscillator key={i} index={i} />
       )) }
 
       <Visualizer />

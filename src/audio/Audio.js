@@ -46,7 +46,6 @@ class Audio {
   }, oscIndex)
 
   setLevel = (level, oscIndex) => this.applyTo(osc => {
-    console.log(level)
     osc.setLevel(level)
   }, oscIndex)
 

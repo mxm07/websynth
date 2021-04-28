@@ -1,8 +1,16 @@
 .synth {
   width: 800px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    height: 100%;
+
+    margin: 20px;
+  }
 }
 
 .synth-inner {
+  margin-top: 20px;
   border-radius: 10px;
   box-sizing: border-box;
   box-shadow: 0 3px 10px rgba(0,0,0,0.6);

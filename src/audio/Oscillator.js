@@ -74,7 +74,6 @@ class Oscillator {
 
 
   startVoice = note => {
-
     // Have to "start" all voices on first keypress, otherwise modern browsers will complain and no sound will play
     if (!this.started) {
       this.enableAllVoices()

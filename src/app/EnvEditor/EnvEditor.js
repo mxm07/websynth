@@ -11,12 +11,12 @@ const EnvEditor = () => {
     ctx.moveTo(padding, h)
 
     ctx.lineTo(w * 0.25, padding)
-    ctx.lineTo(w * 0.5, h * 0.25)
-    ctx.lineTo(w * 0.75, h * 0.25)
+    ctx.lineTo(w * 0.5, h * 0.5)
+    ctx.lineTo(w * 0.75, h * 0.5)
     ctx.lineTo(w, h)
 
-    ctx.strokeStyle = '#87e1ed'
-    ctx.stroke()
+    ctx.fillStyle = '#555'
+    ctx.fill()
 
     ctx.fillStyle = '#87e1ed'
     ctx.beginPath()
