@@ -1,15 +1,14 @@
-import React, { useState } from 'react'
-import Audio from 'Audio'
+import { useState } from 'react'
 import classNames from 'classnames'
 import { Sine, Tri, Square, Saw } from 'Assets/svg'
 import './WaveformSelect.scss'
 
-const WaveformSelect = ({ index }) => {
+const WaveformSelect = ({ osc, index }) => {
   const [selectedWaveform, setSelectedWaveform] = useState('sine')
 
   const waveformClick = type => () => {
     setSelectedWaveform(type)
-    Audio.setOscType(type, index)
+    osc.setType(type)
   }
 
   return (

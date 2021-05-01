@@ -1,19 +1,15 @@
-import React from 'react'
 import OscillatorKnobs from './OscillatorKnobs'
 import WaveformSelect from './WaveformSelect'
 
 import './Oscillator.scss'
 
-const Oscillator = ({ index = 0 }) => {
+const Oscillator = ({ osc, index = 0 }) => (
+  <div className="osc">
+    <h1 className="osc__label">OSC {index}</h1>
 
-  return (
-    <div className="osc">
-      <h1 className="osc__label">OSC {index}</h1>
-
-      <WaveformSelect index={ index } />
-      <OscillatorKnobs index={ index } />
-    </div>
-  )
-}
+    <WaveformSelect osc={ osc } index={ index } />
+    <OscillatorKnobs osc={ osc } />
+  </div>
+)
 
 export default Oscillator

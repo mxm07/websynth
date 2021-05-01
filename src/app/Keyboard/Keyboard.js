@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useCallback, useState, useRef } from 'react'
 import { KEYBOARD_MAP } from 'Constants'
-import { keyToNoteString } from 'Utils'
-import Audio from 'Audio'
+import { useEventListener, keyToNoteString } from 'Utils'
 
 import './Keyboard.scss'
 
@@ -17,100 +16,68 @@ const getKeyIndex = (key, isWhite) => {
 }
 
 // used in a window listener side-effect so keep outside of state
-let keysDown = []
+const keysDown = []
 
-const Keyboard = ({ octaves = 11, octaveOffset = 4 }) => {
+
+const Keyboard = ({ octaves = 11, onKeyDown = () => {}, onKeyUp = () => {} }) => {
   const keyRefs = useRef({})
-  const keyboardRef = useRef()
+  const keyboardRef = useRef({})
+
   const [mouseDown, setMouseDown] = useState(false)
+  const [inputOctave] = useState(4)
 
 
 
-  const keyPressed = (octave, key, isWhite) => {
-    console.log('KEY PRESSED')
+  const keyDownCallback = useCallback((octave, key, isWhite) => {
     const keyIndex = getKeyIndex(key, isWhite)
-    Audio.startOscillator(octave * 12 + keyIndex)
-  }
+    onKeyDown(octave * 12 + keyIndex)
+  }, [onKeyDown])
 
-  const keyUnpressed = (octave, key, isWhite) => {
+  const keyUpCallback = useCallback((octave, key, isWhite) => {
     const keyIndex = getKeyIndex(key, isWhite)
-    Audio.stopOscillator(octave * 12 + keyIndex)
+    onKeyUp(octave * 12 + keyIndex)
+  }, [onKeyUp])
 
-    setMouseDown(false)
-  }
+  const keyboardDownCallback = useCallback(e => {
+    const key = KEYBOARD_MAP.indexOf(e.key)
 
-  const keyEntered = (octave, key, isWhite) => {
-    if (!mouseDown) return
+    if (key > -1 && keysDown.indexOf(key) === -1) {
+      onKeyDown(inputOctave * 12 + key)
+      keysDown.push(key)
 
-    keyPressed(octave, key, isWhite)
-  }
-
-  const keyOut = (octave, key, isWhite) => {
-    if (!mouseDown) return
-
-    const keyIndex = getKeyIndex(key, isWhite)
-    Audio.stopOscillator(octave * 12 + keyIndex)
-  }
-
-
-
-  useEffect(() => {
-    const mouseDownCallback = () => setMouseDown(true)
-    const mouseUpCallback = () => setMouseDown(false)
-    const keyboardDownCallback = e => {
-      const key = KEYBOARD_MAP.indexOf(e.key)
-
-      if (key > -1 && keysDown.indexOf(key) === -1) {
-        Audio.startOscillator(octaveOffset * 12 + key)
-        keysDown.push(key)
-
-        if (keyRefs.current && keyRefs.current[octaveOffset * 12 + key]) {
-          keyRefs.current[octaveOffset * 12 + key].classList.add('active')
-        }
+      if (keyRefs.current && keyRefs.current[inputOctave * 12 + key]) {
+        keyRefs.current[inputOctave * 12 + key].classList.add('active')
       }
     }
+  }, [inputOctave, onKeyDown])
 
-    const keyboardUpCallback = e => {
-      const key = KEYBOARD_MAP.indexOf(e.key)
+  const keyboardUpCallback = useCallback(e => {
+    const key = KEYBOARD_MAP.indexOf(e.key)
 
-      if (key > -1 && keysDown.indexOf(key) > -1) {
-        Audio.stopOscillator(octaveOffset * 12 + key)
-        keysDown.splice(keysDown.indexOf(key), 1)
+    if (key > -1 && keysDown.indexOf(key) > -1) {
+      onKeyUp(inputOctave * 12 + key)
+      keysDown.splice(keysDown.indexOf(key), 1)
 
-        if (keyRefs.current && keyRefs.current[octaveOffset * 12 + key]) {
-          keyRefs.current[octaveOffset * 12 + key].classList.remove('active')
-        }
+      if (keyRefs.current && keyRefs.current[inputOctave * 12 + key]) {
+        keyRefs.current[inputOctave * 12 + key].classList.remove('active')
       }
     }
+  }, [inputOctave, onKeyUp])
 
-    body.addEventListener('mousedown', mouseDownCallback)
-    body.addEventListener('mouseup', mouseUpCallback)
-    body.addEventListener('keydown', keyboardDownCallback)
-    body.addEventListener('keyup', keyboardUpCallback)
-
-    return () => {
-      body.removeEventListener('mousedown', mouseDownCallback)
-      body.removeEventListener('mouseup', mouseUpCallback)
-      body.removeEventListener('keydown', keyboardDownCallback)
-      body.removeEventListener('keyup', keyboardUpCallback)
-    }
-  }, [octaveOffset])
+  const scrollHorizontal = useCallback(e => {
+    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+    keyboardRef.current.scrollLeft -= (delta * 40);
+    e.preventDefault()
+  }, [])
 
 
-  useEffect(() => {
-    if (keyboardRef.current) {
-      const scrollHorizontal = e => {
-        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-        keyboardRef.current.scrollLeft -= (delta * 40); // Multiplied by 40
-        e.preventDefault()
-      }
 
-      body.addEventListener('mousewheel', scrollHorizontal)
 
-      return () => body.removeEventListener('mousewheel', scrollHorizontal)
-    }
-  }, [keyboardRef])
-
+  useEventListener('mousedown', () => setMouseDown(true), body)
+  useEventListener('mouseup', () => setMouseDown(false), body)
+  useEventListener('keydown', keyboardDownCallback, body)
+  useEventListener('keyup', keyboardUpCallback, body)
+  useEventListener('mousewheel', scrollHorizontal, body)  /* Scrolling on mousewheel scrolls keyboard horizontally */
 
 
   return (
@@ -123,10 +90,10 @@ const Keyboard = ({ octaves = 11, octaveOffset = 4 }) => {
                 key={ key }
                 ref={ ref => keyRefs.current[octave * 12 + getKeyIndex(key, true)] = ref }
                 className="keyboard__key--white"
-                onMouseDown={ () => keyPressed(octave, key, true) }
-                onMouseUp={ () => keyUnpressed(octave, key, true) }
-                onMouseEnter={ () => keyEntered(octave, key, true) }
-                onMouseOut={ () => keyOut(octave, key, true) }
+                onMouseDown={ () => keyDownCallback(octave, key, true) }
+                onMouseUp={ () => keyUpCallback(octave, key, true) }
+                onMouseEnter={ () => mouseDown && keyDownCallback(octave, key, true) }
+                onMouseOut={ () => mouseDown && keyUpCallback(octave, key, true) }
               >
                 { key === 0 &&
                   <div className="keyboard__key__label">
@@ -143,10 +110,10 @@ const Keyboard = ({ octaves = 11, octaveOffset = 4 }) => {
                 key={ key }
                 ref={ ref => keyRefs.current[octave * 12 + getKeyIndex(key, false)] = ref }
                 className="keyboard__key--black"
-                onMouseDown={ () => keyPressed(octave, key, false) }
-                onMouseUp={ () => keyUnpressed(octave, key, false) }
-                onMouseEnter={ () => keyEntered(octave, key, false) }
-                onMouseOut={ () => keyOut(octave, key, false) }
+                onMouseDown={ () => keyDownCallback(octave, key, false) }
+                onMouseUp={ () => keyUpCallback(octave, key, false) }
+                onMouseEnter={ () => mouseDown && keyDownCallback(octave, key, false) }
+                onMouseOut={ () => mouseDown && keyUpCallback(octave, key, false) }
               />
             )) }
           </div>
