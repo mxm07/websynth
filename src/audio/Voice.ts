@@ -108,6 +108,7 @@ export default class Voice extends BaseAudio {
   }
 
   play() {
+    console.log('voice play')
     this.ensureVoiceStarted()
 
     this.active = true

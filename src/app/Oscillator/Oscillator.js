@@ -5,7 +5,7 @@ import './Oscillator.scss'
 
 const Oscillator = ({ osc, index = 0 }) => (
   <div className="osc">
-    <h1 className="osc__label">OSC {index}</h1>
+    <h1 className="osc__label">OSC { index }</h1>
 
     <WaveformSelect osc={ osc } index={ index } />
     <OscillatorKnobs osc={ osc } />

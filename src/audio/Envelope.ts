@@ -14,10 +14,12 @@ class Envelope {
   release: number
 
   constructor(adsr: ADSR = {}) {
-    this.attack = adsr.attack || ADSR_DEFAULTS.attack
-    this.decay = adsr.decay || ADSR_DEFAULTS.decay
-    this.sustain = adsr.sustain || ADSR_DEFAULTS.sustain
-    this.release = adsr.release || ADSR_DEFAULTS.release
+    this.attack = ADSR_DEFAULTS.attack
+    this.decay = ADSR_DEFAULTS.decay
+    this.sustain = ADSR_DEFAULTS.sustain
+    this.release = ADSR_DEFAULTS.release
+
+    this.setADSR(adsr)
   }
 
   getADSR(): ADSR {
@@ -27,6 +29,13 @@ class Envelope {
       sustain: this.sustain,
       release: this.release
     }
+  }
+
+  setADSR(adsr: ADSR) {
+    this.attack = adsr.attack || this.attack
+    this.decay = adsr.decay || this.decay
+    this.sustain = adsr.sustain || this.sustain
+    this.release = adsr.release || this.release
   }
 }
 

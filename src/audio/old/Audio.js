@@ -1,4 +1,4 @@
-import Oscillator from './Oscillator'
+import Oscillator from '../Oscillator'
 import { NUM_OSCILLATORS } from 'Constants'
 
 class Audio {

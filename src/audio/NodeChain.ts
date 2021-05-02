@@ -14,12 +14,11 @@ export default class NodeChain extends BaseAudio {
   }
 
   connect() {
-    let node: AudioNode = this.chain[0]
+    for (let i = 0; i < this.chain.length - 1; i++) {
+      const node: AudioNode = this.chain[i]
+      const nextNode: AudioNode = this.chain[i+1]
 
-    for (let i = 1; i < this.chain.length; i++) {
-      const nextNode: AudioNode = this.chain[i]
       node.connect(nextNode)
-      node = nextNode
     }
   }
 }

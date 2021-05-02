@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import Audio from 'Audio'
+import { useCallback, useEffect, useRef } from 'react'
 import './Visualizer.scss'
 
 const Visualizer = () => {

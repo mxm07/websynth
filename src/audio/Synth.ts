@@ -1,5 +1,5 @@
 import Voice from './Voice'
-import { OscillatorType } from './Types'
+import { OscillatorType, ADSR } from './Types'
 import Envelope from './Envelope'
 import Gain from './Gain'
 import NodeChain from './NodeChain'
@@ -21,7 +21,7 @@ export default class Synth {
     const chain = new NodeChain()
     chain.addNode(this.globalGain.node)
 
-    this.voices = Array<Voice>(8).map(() => (
+    this.voices = [...Array<Voice>(8)].map(() => (
       new Voice(type, chain, this.envelope)
     ))
   }
@@ -38,6 +38,9 @@ export default class Synth {
     return this.type
   }
 
+  setEnvelope(adsr: ADSR) {
+    this.envelope.setADSR(adsr)
+  }
 
   findNextAvailableVoice(): Voice | undefined {
     for (let voice of this.voices) {
@@ -62,6 +65,7 @@ export default class Synth {
   playNote(note: number) {
     const nextAvailableVoice = this.findNextAvailableVoice()
 
+    console.log('playnote')
     if (nextAvailableVoice) {
       nextAvailableVoice.setNote(note)
       nextAvailableVoice.play()

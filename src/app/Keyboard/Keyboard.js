@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react'
+import { useCallback, useState, useRef } from 'react'
 import { KEYBOARD_MAP } from 'Constants'
 import { useEventListener, keyToNoteString } from 'Utils'
 
