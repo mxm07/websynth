@@ -1,10 +1,8 @@
-import { useRef } from 'react'
 import Oscillator from '../Oscillator'
 import Keyboard from '../Keyboard'
-import Visualizer from '../Visualizer'
 import EnvEditor from '../EnvEditor'
-
-import SynthNode from 'Audio/Synth'
+import Visualizer from '../Visualizer'
+import { Tone, calculateNoteFrequency } from 'Utils'
 
 import './Synth.scss'
 
@@ -16,13 +14,13 @@ const Synth = () => {
     because each voice has its own oscillator. Synth in the audio
     libary = Oscillator in the React hierarchy... confusing, I know
   */
-  const oscs = useRef([...Array(NUM_OSCILLATORS)].map(() => new SynthNode()))
+  // const oscs = useRef([...Array(NUM_OSCILLATORS)].map(() => new SynthNode()))
 
   return (
     <div className="synth">
       <div className="synth-inner">
         { [ ...Array(NUM_OSCILLATORS) ].map((_, i) => (
-          <Oscillator key={i} index={i} osc={ oscs.current[i] } />
+          <Oscillator key={i} index={i} />
         )) }
 
         <Visualizer />
@@ -31,9 +29,12 @@ const Synth = () => {
 
       <Keyboard
         onKeyDown={ note => {
-          console.log('onKeyDown', note)
-          console.log(oscs.current)
-          oscs.current.forEach(osc => osc.playNote(note) )
+          const freq = calculateNoteFrequency(note)
+          Tone.triggerAttack(freq)
+        } }
+        onKeyUp={ note => {
+          const freq = calculateNoteFrequency(note)
+          Tone.triggerRelease(freq)
         } }
       />
     </div>

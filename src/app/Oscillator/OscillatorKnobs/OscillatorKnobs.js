@@ -1,10 +1,11 @@
 import { Knob } from 'Components'
+import { Tone } from 'Utils'
 import './OscillatorKnobs.scss'
 
 const timeFormatter = value => value < 1000 ? `${value}ms` : `${parseInt(value / 1000).toFixed(0)}s`
 const hzFormatter = value => `${parseInt(value).toFixed(0)}hz`
 
-const OscillatorKnobs = ({ osc }) => (
+const OscillatorKnobs = ({ osc = {} }) => (
   <div className="osc__knobs">
     <Knob
       label="Volume"
@@ -13,7 +14,10 @@ const OscillatorKnobs = ({ osc }) => (
       places={0}
       initialValue={30}
       suffix="%"
-      onChange={ value => osc.volume = value / 250 }
+      onChange={ value => {
+        Tone.options.volume = parseInt(value) - 50
+        console.log(Tone.options)
+      } }
     />
 
     <Knob
@@ -23,7 +27,7 @@ const OscillatorKnobs = ({ osc }) => (
       initialValue={0.5}
       logScaling={10}
       format={ timeFormatter }
-      onChange={ value => osc.setADSR({ attack: value / 1000 }) }
+      onChange={ value => { Tone.options.envelope.attack = value / 1000 } }
     />
 
     <Knob
@@ -33,17 +37,18 @@ const OscillatorKnobs = ({ osc }) => (
       initialValue={1000}
       logScaling={10}
       format={ timeFormatter }
-      onChange={ value => osc.setADSR({ decay: value / 1000 }) }
+      onChange={ value => { Tone.options.envelope.decay = value / 1000 } }
     />
 
     <Knob
       label="Sustain"
-      min={-80}
-      max={0}
+      min={0}
+      max={100}
       initialValue={0}
-      logScaling={-10}
-      suffix="db"
-      onChange={ value => osc.setADSR({ sustain: value }) }
+      suffix="%"
+      onChange={ value => {
+        Tone.options.envelope.sustain = value / 100
+      } }
     />
 
     <Knob
@@ -53,7 +58,9 @@ const OscillatorKnobs = ({ osc }) => (
       initialValue={15}
       logScaling={10}
       format={ timeFormatter }
-      onChange={ value => osc.setADSR({ release: value / 1000 }) }
+      onChange={ value => {
+        Tone.options.envelope.release = value / 1000
+      } }
     />
 
     <Knob
@@ -63,7 +70,7 @@ const OscillatorKnobs = ({ osc }) => (
       initialValue={440}
       logScaling={10}
       format={ hzFormatter }
-      onChange={ value => Audio.setLPF({ freq: value }) }
+      onChange={ value => {} }
     />
 
     <Knob
@@ -73,7 +80,7 @@ const OscillatorKnobs = ({ osc }) => (
       initialValue={0}
       suffix="%"
       places={0}
-      onChange={ value => Audio.setLPF({ res: value }) }
+      onChange={ value => {} }
     />
   </div>
 )

@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { Analyser } from 'Utils'
+
 import './Visualizer.scss'
 
 const Visualizer = () => {
   const canvasRef = useRef(null)
 
-  const drawVisualization = useCallback((ctx, analyser, dataArray, oscilloscope = false) => {
-    if (oscilloscope) {
-      analyser.getByteTimeDomainData(dataArray)
-    } else {
-      analyser.getByteFrequencyData(dataArray)
-    }
+  const drawVisualization = useCallback((ctx, analyser) => {
+    const dataArray = analyser.getValue()
 
     const WIDTH = ctx.canvas.width
     const HEIGHT = ctx.canvas.height
-    const bufferLength = analyser.frequencyBinCount
+    const bufferLength = 1024
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
     let barWidth = WIDTH / bufferLength
@@ -27,7 +25,7 @@ const Visualizer = () => {
       barHeight = dataArray[i] * 0.5
 
       const x = curX
-      const y = HEIGHT - barHeight * 0.5
+      const y = (HEIGHT - (barHeight * HEIGHT)) - (HEIGHT / 2)
 
       ctx.lineTo(x, y - 1)
 
@@ -47,14 +45,10 @@ const Visualizer = () => {
 
     const canvasCtx = canvas.getContext('2d')
 
-    const analyser = Audio.analyser
-    const bufferLength = analyser.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
-
     let animationFrameId
 
     const render = () => {
-      drawVisualization(canvasCtx, analyser, dataArray)
+      drawVisualization(canvasCtx, Analyser)
       animationFrameId = window.requestAnimationFrame(render)
     }
 
