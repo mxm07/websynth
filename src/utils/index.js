@@ -1,3 +1,5 @@
 export * from './notes'
 export * from './misc'
 export * from './hooks'
+export * from './tone'
+export { default as useMIDI } from './useMIDI'

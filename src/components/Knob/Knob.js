@@ -114,6 +114,7 @@ const Knob = ({
       const newValue = clamp(preDragValue + delta / DRAG_RANGE)
 
       setKnobValue(newValue)
+      onChange(calculateRealValue(newValue))
     }
   }, [
     mousePos,
@@ -122,12 +123,9 @@ const Knob = ({
     preDragPos.y,
     preDragValue,
     calculateRealValue,
-    onChange
+    onChange,
+    knobValue
   ])
-
-  useEffect(() => {
-    onChange(calculateRealValue(knobValue))
-  }, [knobValue, calculateRealValue, onChange])
 
   useEffect(() => {
     setKnobValue(calculateKnobValue(initialValue))

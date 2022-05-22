@@ -3,7 +3,7 @@ import WaveformSelect from './WaveformSelect'
 
 import './Oscillator.scss'
 
-const Oscillator = ({ osc, index = 0 }) => (
+const Oscillator = ({ osc = null, index = 0 }) => (
   <div className="osc">
     <h1 className="osc__label">OSC { index }</h1>
 
