@@ -16,25 +16,25 @@ const WaveformSelect = ({ osc, index }) => {
       <Sine
         className={ classNames('waveform-svg', selectedWaveform === 'sine' && 'selected') }
         onClick={ waveformClick('sine') }
-        animate={ selectedWaveform === 'sine'}
+        animate={ selectedWaveform === 'sine' }
         index={ index }
       />
       <Saw
         className={ classNames('waveform-svg', selectedWaveform === 'sawtooth' && 'selected') }
         onClick={ waveformClick('sawtooth') }
-        animate={ selectedWaveform === 'sawtooth'}
+        animate={ selectedWaveform === 'sawtooth' }
         index={ index }
       />
       <Square
         className={ classNames('waveform-svg', selectedWaveform === 'square' && 'selected') }
         onClick={ waveformClick('square') }
-        animate={ selectedWaveform === 'square'}
+        animate={ selectedWaveform === 'square' }
         index={ index }
       />
       <Tri
         className={ classNames('waveform-svg', selectedWaveform === 'triangle' && 'selected') }
         onClick={ waveformClick('triangle') }
-        animate={ selectedWaveform === 'triangle'}
+        animate={ selectedWaveform === 'triangle' }
         index={ index }
       />
     </div>

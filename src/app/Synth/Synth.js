@@ -1,12 +1,12 @@
 import Oscillator from '../Oscillator'
 import Keyboard from '../Keyboard'
-import EnvEditor from '../EnvEditor'
+import Env from '../Env'
 import Visualizer from '../Visualizer'
 import { Tone, calculateNoteFrequency } from 'Utils'
 
 import './Synth.scss'
 
-const NUM_OSCILLATORS = 2
+// const NUM_OSCILLATORS = 2
 
 const Synth = () => {
   /*
@@ -19,12 +19,10 @@ const Synth = () => {
   return (
     <div className="synth">
       <div className="synth-inner">
-        { [ ...Array(NUM_OSCILLATORS) ].map((_, i) => (
-          <Oscillator key={i} index={i} />
-        )) }
+        <Oscillator index={0} />
 
         <Visualizer />
-        <EnvEditor />
+        <Env />
       </div>
 
       <Keyboard

@@ -122,10 +122,10 @@ const Keyboard = ({ octaves = 11, onKeyDown = () => {}, onKeyUp = () => {} }) =>
                 key={ key }
                 ref={ ref => keyRefs.current[octave * 12 + getKeyIndex(key, false)] = ref }
                 className="keyboard__key--black"
-                onMouseDown={ () => keyDownCallback(octave, key, false) }
-                onMouseUp={ () => keyUpCallback(octave, key, false) }
-                onMouseEnter={ () => mouseDown && keyDownCallback(octave, key, false) }
-                onMouseOut={ () => mouseDown && keyUpCallback(octave, key, false) }
+                onMouseDown={ () => keyDownCallback(octave, key, false, onKeyDown) }
+                onMouseUp={ () => keyUpCallback(octave, key, false, onKeyUp) }
+                onMouseEnter={ () => mouseDown && keyDownCallback(octave, key, false, onKeyDown) }
+                onMouseOut={ () => mouseDown && keyUpCallback(octave, key, false, onKeyUp) }
               />
             )) }
           </div>
