@@ -1,5 +1,5 @@
 import { Knob } from 'Components'
-import { Tone } from 'Utils'
+import { Synth } from 'Utils'
 import './OscillatorKnobs.scss'
 
 const hzFormatter = value => `${parseInt(value).toFixed(0)}hz`
@@ -14,7 +14,9 @@ const OscillatorKnobs = ({ osc = {} }) => (
       initialValue={30}
       suffix="%"
       onChange={ value => {
-        Tone.options.volume = parseInt(value) - 50
+        Synth.set({
+          volume: parseInt(value) - 50
+        })
       } }
     />
 

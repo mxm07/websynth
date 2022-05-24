@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react'
-import { Tone } from '../../utils'
-import EnvEditor from './EnvEditor'
+import { Synth } from 'Utils'
+import EnvGraph from './EnvGraph'
 import EnvKnobs from './EnvKnobs'
 
+import './Env.scss'
 
 const Env = () => {
   const [attack, setAttack] = useState(700)
@@ -10,49 +11,36 @@ const Env = () => {
   const [sustain, setSustain] = useState(1)
   const [release, setRelease] = useState(500)
 
-
-  const handleAdsrChange = useCallback(({
-    attack: newAttack,
-    decay: newDecay,
-    sustain: newSustain,
-    release: newRelease
-  }) => {
-    if (newAttack !== attack) { setAttack(newAttack) }
-    if (newDecay !== decay) { setDecay(newDecay) }
-    if (newSustain !== sustain) { setSustain(newSustain) }
-    if (newRelease !== release) { setRelease(newRelease) }
-  }, [attack, decay, sustain, release])
-
-  const handleKnobChange = useCallback((type) => (value) => {
+  const adsrValueChanged = useCallback((type, newValue) => {
     switch (type) {
       case 'attack':
-        if (value !== attack) {
-          Tone.options.envelope.attack = value / 1000
-          setAttack(value)
+        if (newValue !== attack) {
+          Synth.set({ envelope: { attack: newValue / 1000 } })
+          setAttack(newValue)
         }
         break
 
       case 'decay':
-        if (value !== decay) {
-          Tone.options.envelope.decay = value / 1000
-          setDecay(value)
+        if (newValue !== decay) {
+          Synth.set({ envelope: { decay: newValue / 1000 } })
+          setDecay(newValue)
         }
         break
 
       case 'sustain':
-        if (value !== sustain) {
-          Tone.options.envelope.sustain = value / 100
-          setSustain(value / 100)
+        if (newValue !== sustain) {
+          Synth.set({ envelope: { sustain: newValue / 100 } })
+
+          setSustain(newValue / 100)
         }
 
         break
 
       case 'release':
-        if (value !== release) {
-          Tone.options.envelope.release = value / 1000
-          setRelease(value)
+        if (newValue !== release) {
+          Synth.set({ envelope: { release: newValue / 1000 } })
+          setRelease(newValue)
         }
-
         break
 
       default:
@@ -60,9 +48,21 @@ const Env = () => {
     }
   }, [attack, decay, sustain, release])
 
+  const handleAdsrChange = useCallback((newAdsr) => {
+    ['attack', 'decay', 'sustain', 'release'].forEach(type => {
+      adsrValueChanged(type, newAdsr[type])
+    })
+  }, [adsrValueChanged])
+
+
+  const handleKnobChange = useCallback((type) => (value) => {
+    adsrValueChanged(type, value)
+  }, [adsrValueChanged])
+
+
   return (
     <div className="env">
-      <EnvEditor
+      <EnvGraph
         adsr={{ attack, sustain, decay, release }}
         handleAdsrChange={ handleAdsrChange }
       />

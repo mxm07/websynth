@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import classNames from 'classnames'
+import { Synth } from 'Utils'
 import { Sine, Tri, Square, Saw } from 'Assets/svg'
 import './WaveformSelect.scss'
 
-const WaveformSelect = ({ osc, index }) => {
+const WaveformSelect = ({ index }) => {
   const [selectedWaveform, setSelectedWaveform] = useState('sine')
 
   const waveformClick = type => () => {
     setSelectedWaveform(type)
-    osc.setType(type)
+    Synth.set({
+      oscillator: { type }
+    })
   }
 
   return (

@@ -1,7 +1,9 @@
 const path = require('path')
 
 module.exports = function override(config) {
- return {
+  process.env.WEBPACK_ENV = 'development'
+
+  return {
     ...config,
     resolve: {
       ...config.resolve,

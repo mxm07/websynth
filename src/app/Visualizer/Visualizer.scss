@@ -1,6 +1,15 @@
-.visualizer {
-  width: calc(100% - 40px);
-  height: 100px;
+@import "../../variables";
 
-  margin-left: 20px;
+.visualizer {
+  background-color: $section-bg;
+  border-radius: $section-border-radius;
+
+  width: 200px;
+  height: 100px;
+  margin-bottom: 20px;
+
+  canvas {
+    width: 200px;
+    height: 100px;
+  }
 }

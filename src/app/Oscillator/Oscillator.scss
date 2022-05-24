@@ -1,25 +1,30 @@
+@import "../../variables";
 
 .osc {
-  display: flex;
   align-items: center;
+  justify-content: space-between;
+  background-color: $section-bg;
+  border-radius: $section-border-radius;
+  display: flex;
 
-  width: 100%;
+  width: 325px;
+  height: 100px;
 
-  padding: 10px 0 0 20px;
+  margin: 0 0 20px 0;
+  padding: 0 20px 0 20px;
+
   position: relative;
 
   z-index: 1;
 
-  &:first-child {
-    padding-top: 30px;
-  }
-
-  & > * {
-    margin: 5px 15px 5px 5px;
-    display: inline-block;
-  }
-
   &__label {
     color: #2a2a2a;
+  }
+
+  &__controls {
+    & > * {
+      margin-left: 20px;
+      display: inline-block;
+    }
   }
 }

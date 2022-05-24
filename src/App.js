@@ -1,12 +1,12 @@
 import React from 'react'
-import Synth from './app/Synth'
+import SynthApp from './app/SynthApp'
 
 import './App.scss';
 
 const App = () => {
   return (
     <div className="app">
-      <Synth />
+      <SynthApp />
     </div>
   );
 }

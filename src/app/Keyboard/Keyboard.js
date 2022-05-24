@@ -60,7 +60,12 @@ const keyboardUpCallback = (keyRefs, inputOctave, onKeyUp) => e => {
 
 
 
-const Keyboard = ({ octaves = 11, onKeyDown = () => {}, onKeyUp = () => {} }) => {
+const Keyboard = ({
+  octaves = 11,
+  onKeyDown = () => {},
+  onKeyUp = () => {},
+  activeKeysOverride = []
+}) => {
   const keyRefs = useRef({})
   const keyboardRef = useRef({})
 
@@ -68,14 +73,13 @@ const Keyboard = ({ octaves = 11, onKeyDown = () => {}, onKeyUp = () => {} }) =>
   const [inputOctave] = useState(4)
 
   const scrollHorizontal = useCallback(e => {
-    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-    keyboardRef.current.scrollLeft -= (delta * 40);
-    e.preventDefault()
+    if (keyboardRef.current.contains(e.target)) {
+      var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+      keyboardRef.current.scrollLeft -= (delta * 40);
+    }
   }, [])
 
-
   const [playing, note = 0, velocity = 0] = useMIDI()
-
 
   useEffect(() => {
     if (playing) {
