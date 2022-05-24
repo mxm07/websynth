@@ -1,66 +1,9 @@
+import { adsrToCoordinates, clamp, coordinatesToAdsr } from './utils'
 import { Circle, Layer, Line, Stage } from 'react-konva'
 
-import './EnvEditor.scss'
+import './EnvGraph.scss'
 
-
-const MAX_RANGE = 3200
-
-const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
-
-const isValue = value => value !== null && value !== undefined
-
-const adsrToCoordinates = ({ attack, decay, sustain, release }, width, height) => {
-  let attackPos, decaySustainPos, releasePos
-
-
-  if (isValue(attack)) {
-    attackPos = {
-      x: (attack / MAX_RANGE) * width,
-      y: 0
-    }
-
-    if (isValue(decay) && isValue(sustain)) {
-      decaySustainPos = {
-        x: ((attack + decay) / MAX_RANGE) * width,
-        y: (1 - sustain) * height
-      }
-
-      if (isValue(release)) {
-        releasePos = {
-          x: ((attack + decay + release) / MAX_RANGE) * width,
-          y: height
-        }
-      }
-    }
-  }
-
-  return {
-    ...(attackPos ? { attack: attackPos } : {}),
-    ...(decaySustainPos ? { decaySustain: decaySustainPos } : {}),
-    ...(releasePos ? { release: releasePos } : {}),
-  }
-}
-
-const coordinatesToAdsr = ({
-  attack: {
-    x: attackX
-  },
-  decaySustain: {
-    x: decaySustainX,
-    y: decaySustainY
-  },
-  release: {
-    x: releaseX
-  }
-}, width, height) => ({
-  attack: (attackX / width) * MAX_RANGE,
-  decay: ((decaySustainX - attackX) / width) * MAX_RANGE,
-  sustain: 1 - (decaySustainY / height),
-  release: ((releaseX - decaySustainX) / width) * MAX_RANGE
-})
-
-
-const EnvEditor = ({
+const EnvGraph = ({
   width = 200,
   height = 100,
   controlRadius = 5,
@@ -69,20 +12,19 @@ const EnvEditor = ({
 }) => {
   const { attack, decaySustain, release } = adsrToCoordinates(adsr, width, height)
 
+  const adsrCurvePoints = [
+    0, height,
+    attack.x, attack.y,
+    decaySustain.x, decaySustain.y,
+    release.x, release.y
+  ]
+
+
   return (
-    <div className="env-editor" style={{ width, height }}>
+    <div className="env-graph" style={{ width, height }}>
       <Stage width={ width } height={ height }>
         <Layer>
-          <Line
-            points={[
-              0, height,
-              attack.x, attack.y,
-              decaySustain.x, decaySustain.y,
-              release.x, release.y
-            ]}
-            fill='#87e1ed'
-            closed
-          />
+          <Line points={ adsrCurvePoints } fill='#87e1ed' closed />
 
           <Circle
             radius={ controlRadius }
@@ -143,4 +85,4 @@ const EnvEditor = ({
   )
 }
 
-export default EnvEditor
+export default EnvGraph

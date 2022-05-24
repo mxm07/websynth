@@ -3,12 +3,14 @@ import WaveformSelect from './WaveformSelect'
 
 import './Oscillator.scss'
 
-const Oscillator = ({ osc = null, index = 0 }) => (
+const Oscillator = ({ index = 0 }) => (
   <div className="osc">
     <h1 className="osc__label">OSC { index }</h1>
 
-    <WaveformSelect osc={ osc } index={ index } />
-    <OscillatorKnobs osc={ osc } />
+    <div className="osc__controls">
+      <WaveformSelect index={ index } />
+      <OscillatorKnobs />
+    </div>
   </div>
 )
 

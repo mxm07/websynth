@@ -1,16 +1,19 @@
-import * as ToneLib from 'tone'
+import * as Tone from 'tone'
 
-const Analyser = new ToneLib.Analyser('waveform', 1024)
+const Analyser = new Tone.Analyser('waveform', 1024)
 
-const Tone = new ToneLib.PolySynth({
-  maxPolyphony: 8
-}).connect(Analyser).toDestination()
+const Synth = new Tone.PolySynth({
+  maxPolyphony: 32
+})
 
-Tone.options.envelope = {
-  attack: 1,
-  decay: 1,
-  sustain: 1,
-  release: 0.5
-}
+const Filter = new Tone.Filter(500, 'lowpass').toDestination()
 
-export { Tone, Analyser }
+Filter.set({
+  frequency: 1000,
+  type: 'bandpass',
+  Q: 10
+})
+
+Synth.chain(Filter, Analyser, Tone.Destination)
+
+export { Synth, Filter, Analyser }

@@ -1,9 +1,9 @@
-import EnvEditor from './EnvEditor'
+import EnvGraph from './EnvGraph'
 import EnvKnobs from './EnvKnobs'
 import Env from './Env'
 
 export {
-  EnvEditor,
+  EnvGraph,
   EnvKnobs
 }
 

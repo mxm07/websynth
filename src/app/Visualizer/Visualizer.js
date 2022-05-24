@@ -59,7 +59,9 @@ const Visualizer = () => {
 
 
   return (
-    <canvas ref={ canvasRef } className="visualizer" />
+    <div className="visualizer">
+      <canvas ref={ canvasRef } />
+    </div>
   )
 }
 

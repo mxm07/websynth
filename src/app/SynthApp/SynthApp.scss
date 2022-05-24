@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .synth {
   width: 800px;
 
@@ -10,11 +12,18 @@
 }
 
 .synth-inner {
-  margin-top: 20px;
   border-radius: 10px;
   box-sizing: border-box;
   box-shadow: 0 3px 10px rgba(0,0,0,0.6);
-  background-color: #333;
+  background-color: $app-bg;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: flex-start;
+
   height: 500px;
+  margin-top: 20px;
+  padding: 20px;
 }
 
