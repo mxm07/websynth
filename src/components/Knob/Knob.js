@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import classNames from 'classnames'
+import { logToReal, realToLog } from 'Utils'
+
 import './Knob.scss'
 
 const body = document.querySelector('body')
@@ -25,37 +27,6 @@ const Knob = ({
   const [preDragValue, setPreDragValue] = useState(0)
   const [knobValue, setKnobValue] = useState(0)
 
-
-  // takes a value between 0 and 1, scales to be between min and max (scales logarithmically if 'logScaling' is set)
-  const calculateRealValue = useCallback(value => {
-    let val
-
-    if (logScaling === 0) {
-      val = min + (value * (max - min))
-    } else if (logScaling > 0) {
-      // Convert the value into a proportion of the log scale, then convert back by raising 10 to the power of it
-      // Subtract one at the end to reach min
-      val = min + Math.pow(logScaling, value * (Math.log(max + 1 - min) / Math.log(logScaling))) - 1
-    } else {
-      val = min + Math.pow(-logScaling, (1 - value) * (Math.log(max + 1 - min) / Math.log(-logScaling))) - 1
-      val = max - val + min
-    }
-
-    return val.toFixed(places)
-  }, [max, min, places, logScaling])
-
-  // opposite of calculateRealValue, takes a scaled value and returns a value between 0 and 1
-  const calculateKnobValue = useCallback(value => {
-    if (logScaling === 0) {
-      return (value - min) / (max - min)
-    } else if (logScaling > 0) {
-      return Math.log(value - min + 1) / Math.log(max - min + 1)
-    } else {
-      return Math.log((1 - value) - min + 1) / Math.log(max - min + 1)
-    }
-  }, [min, max, logScaling])
-
-
   const onMouseDown = () => {
     setMouseDown(true)
     setPreDragPos(mousePos)
@@ -77,7 +48,6 @@ const Knob = ({
 
   const onWheel = ({ deltaY }) => {
     const delta = -deltaY / 10000 // 0.01 or -0.01
-    console.log(delta)
     const newValue = clamp(knobValue + delta)
 
     setKnobValue(newValue)
@@ -114,7 +84,7 @@ const Knob = ({
       const newValue = clamp(preDragValue + delta / DRAG_RANGE)
 
       setKnobValue(newValue)
-      onChange(calculateRealValue(newValue))
+      onChange(logToReal(newValue, logScaling, min, max).toFixed(places))
     }
   }, [
     mousePos,
@@ -122,18 +92,21 @@ const Knob = ({
     preDragPos.x,
     preDragPos.y,
     preDragValue,
-    calculateRealValue,
+    places,
     onChange,
-    knobValue
+    knobValue,
+    logScaling,
+    min,
+    max
   ])
 
   useEffect(() => {
-    setKnobValue(calculateKnobValue(initialValue))
-  }, [initialValue, calculateKnobValue])
+    setKnobValue(realToLog(initialValue, logScaling, min, max))
+  }, [initialValue, logScaling, min, max])
 
 
   const degreeRotation = 45 + 270 * knobValue
-  const realValue = calculateRealValue(knobValue)
+  const realValue = logToReal(knobValue, logScaling, min, max).toFixed(places)
 
   return (
     <div className="knob-wrapper">
